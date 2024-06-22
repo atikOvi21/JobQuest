@@ -1,7 +1,28 @@
-//  import JobListing from "./JobListing";
+import { useEffect, useState } from "react";
+import JobListing from "./JobListing";
+import Spinner from "./Spinner";
 
 const JobListings = ({ isHome = false }) => {
-  const jobListing = isHome ? jobs.slice(0, 3) : jobs;
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/jobs");
+        const data = await res.json();
+        setJobs(data);
+      } catch (error) {
+        console.log("Error fetching data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  // const jobListing = isHome ? jobs.slice(0, 3) : jobs;
   return (
     <section className=" bg-gray-100 pb-20 pt-14 ">
       <div className="container-xl px-4 py-7 p-b-10 lg:container m-auto text-center justify-center">
@@ -12,11 +33,15 @@ const JobListings = ({ isHome = false }) => {
           {isHome ? "Recent Jobs" : "Browse Jobs"}
         </span>
 
-        <div className="pt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {jobListing.map((job) => (
-            <JobListing key={job.id} job={job} />
-          ))}
-        </div>
+        {loading ? (
+          <Spinner loading={loading} />
+        ) : (
+          <div className="pt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {jobs.map((job) => (
+              <JobListing key={job.id} job={job} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
