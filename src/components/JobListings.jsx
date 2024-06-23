@@ -36,9 +36,11 @@ const JobListings = ({ isHome = false }) => {
           {isHome ? "Recent Jobs" : "Browse Jobs"}
         </span>
 
-        {loading ? (
+        {
+        loading ? (
           <Spinner loading={loading} />
-        ) : (
+        ) : 
+        (
           <div className="pt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
             {jobs.map((job) => (
               <JobListing key={job.id} job={job} />
@@ -51,6 +53,7 @@ const JobListings = ({ isHome = false }) => {
 };
 
 export default JobListings;
+
 
 //   {/* <!-- Job Listing 2 --> */}
 //   <div className="bg-white rounded-xl shadow-md relative">
