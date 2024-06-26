@@ -5,14 +5,30 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 
+import { toast } from "react-toastify";
 import MainLayout from "./layouts/MainLayout";
 import AddJobPage from "./pages/AddJobPage";
+import EditJobPage from "./pages/EditJobPage";
 import HomePage from "./pages/HomePage";
 import JobPage, { jobLoader } from "./pages/JobPage";
 import JobsPage from "./pages/JobsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 const App = () => {
+  /// Edit Job
+
+  const updateJobSubmit = async (updatedJob) => {
+    console.log(updatedJob);
+
+    const res = await fetch(`/api/jobs/${updatedJob.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedJob),
+    });
+  };
+
   /// Delete Job
   const deleteJob = async (id) => {
     console.log(id);
@@ -22,6 +38,7 @@ const App = () => {
     });
 
     if (!res.ok) {
+      toast.error("Failed to delete the job");
       console.error("Failed to delete the job", res.statusText);
       return;
     }
@@ -53,6 +70,11 @@ const App = () => {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<HomePage />} />
         <Route path="/add-job" element={<AddJobPage AddJobSubmit={addJob} />} />
+        <Route
+          path="/edit-job/:id"
+          element={<EditJobPage updateJobSubmit={updateJobSubmit} />}
+          loader={jobLoader}
+        />
         <Route
           path="jobs/:id"
           element={<JobPage deleteJob={deleteJob} />}
