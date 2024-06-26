@@ -6,24 +6,68 @@ import {
 } from "react-router-dom";
 
 import MainLayout from "./layouts/MainLayout";
+import AddJobPage from "./pages/AddJobPage";
 import HomePage from "./pages/HomePage";
-import JobPage , {jobLoader} from "./pages/JobPage";
+import JobPage, { jobLoader } from "./pages/JobPage";
 import JobsPage from "./pages/JobsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path="/" element={<MainLayout />}>
-      <Route index element={<HomePage />} />
-      <Route path="jobs" element={<JobsPage />} />
-      <Route path="jobs/:id" element={<JobPage />} loader={jobLoader} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Route>
-  )
-);
 const App = () => {
+  /// Delete Job
+  const deleteJob = async (id) => {
+    console.log(id);
+
+    const res = await fetch(`/api/jobs/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to delete the job", res.statusText);
+      return;
+    }
+
+    console.log("Job deleted successfully");
+  };
+
+  /// Add Job
+  const addJob = async (newJob) => {
+    console.log(newJob);
+    const res = await fetch("/api/jobs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newJob),
+    });
+
+    if (!res.ok) {
+      console.error("Failed to add the job", res.statusText);
+      return;
+    }
+
+    console.log("Job added successfully");
+  };
+
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="/add-job" element={<AddJobPage AddJobSubmit={addJob} />} />
+        <Route
+          path="jobs/:id"
+          element={<JobPage deleteJob={deleteJob} />}
+          loader={jobLoader}
+        />
+        <Route path="/jobs" element={<JobsPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    )
+  );
+
   return <RouterProvider router={router} />;
 };
+
+export default App;
 
 // return (
 //   <>
@@ -38,8 +82,6 @@ const App = () => {
 //   </>
 // );
 // };
-
-export default App;
 
 // const App = () => {
 //   const names = ["John", "Jane", "Doe", "Smith", "Mary"];
